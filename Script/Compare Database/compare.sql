@@ -230,7 +230,7 @@ CALL dt_wl_proceed_prepare_statement();
 DELETE FROM z_newcreate_all_option_infor WHERE option_method='INSERT' AND LENGTH(TRIM(column_default_value))>0 AND column_default_value=update_infor;
 
 ############################################################################################################################
-#dispaly the orignal table reference result table 显示插入、添加、删除的条数
+#dispaly the orignal table reference result table 显示插入/添加/删除的条数
 ############################################################################################################################
 CREATE TABLE z_newcreate_update_or_add_final
 SELECT DISTINCT tableName,1 isExist_PrimaryKey,CONCAT('SELECT * FROM compare_',tableName,'_is_key_20200205;') result_tableName FROM z_newcreate_is_key_all_table
