@@ -23,7 +23,7 @@ CREATE TABLE z_newcreate_exist_address_20200518
 SELECT * FROM address WHERE userId IS NOT NULL AND (LENGTH(TRIM(street1))>0 OR LENGTH(TRIM(street2))>0 OR LENGTH(TRIM(street3))>0 OR LENGTH(TRIM(street4))>0 OR LENGTH(TRIM(city))>0 OR LENGTH(TRIM(state))>0 OR LENGTH(TRIM(province))>0 OR LENGTH(TRIM(zip))>0 OR LENGTH(TRIM(zipSuffix))>0 OR LENGTH(TRIM(county))>0 OR LENGTH(TRIM(countryId))>0);
 
 ####################################################################################################################################
-#deal with individual account's company name
+#deal with individual account company name
 ####################################################################################################################################
 UPDATE z_newcreate_all_account_report_20200518 zn,company_contact cc SET zn.`Company Name`=cc.companyName WHERE zn.isCompanyAccount='No' AND zn.userId=cc.contactId AND LENGTH(TRIM(cc.contactId))>0 AND cc.currentEmployer=1 AND (cc.companyId IS NULL OR LENGTH(TRIM(cc.companyId))=0) AND zn.`Company Name` IS NULL AND LENGTH(TRIM(cc.companyName))>0;
 UPDATE z_newcreate_all_account_report_20200518 zn,company_contact cc,company c SET zn.`Company Name`=c.`name` WHERE zn.isCompanyAccount='No' AND zn.userId=cc.contactId AND cc.companyId=c.companyId AND LENGTH(TRIM(cc.contactId))>0 AND cc.currentEmployer=1 AND LENGTH(TRIM(cc.companyId))>0 AND zn.`Company Name` IS NULL;
