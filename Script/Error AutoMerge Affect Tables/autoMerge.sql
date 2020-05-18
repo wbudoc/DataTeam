@@ -11,9 +11,9 @@
 #currentAccountId: 最终合并的accountId  
 #keepAccountName:  需保留账号的名字
 #purgeAccountName: 被合并账号的名字
-#keepUserId：  需保留账号的userId
-#purgeUserId： 被合并账号的userId
-#autoMerge：   (1,autoMerge)
+#keepUserId:  需保留账号的userId
+#purgeUserId: 被合并账号的userId
+#autoMerge:  (1,autoMerge)
 SELECT * FROM duplicate_merge_history;
 
 ################################################################################################################################
