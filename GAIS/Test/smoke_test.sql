@@ -21,7 +21,7 @@ INSERT INTO smoke_test_report(description,result,totalNumber)
 SELECT 'The transation type is blank or not a standard values',IF(COUNT(*)>0,'Fail','Pass'),COUNT(*) FROM z_newcreate_template_gais WHERE parentType IS NULL OR parentType NOT IN('Activity','Grants','Invitation','Prospects');
 
 INSERT INTO smoke_test_report(description,result,totalNumber)
-SELECT 'The start date is bigger than end date in Activity',IF(COUNT(*)>0,'W','Pass'),COUNT(*) FROM z_newcreate_template_gais WHERE activityStartDate IS NOT NULL AND activityEndDate IS NOT NULL AND  activityStartDate>activityEndDate;
+SELECT 'The start date is bigger than end date in Activity',IF(COUNT(*)>0,'Warning','Pass'),COUNT(*) FROM z_newcreate_template_gais WHERE activityStartDate IS NOT NULL AND activityEndDate IS NOT NULL AND  activityStartDate>activityEndDate;
 
 INSERT INTO smoke_test_report(description,result,totalNumber)
 SELECT 'Subject and StartDate must be populated in Activity',IF(COUNT(*)>0,'Fail','Pass'),COUNT(*) FROM z_newcreate_template_gais WHERE parentType='Activity' AND (LENGTH(TRIM(activitySubject))=0 OR activitySubject IS NULL OR LENGTH(TRIM(activityStartDate))=0 OR activityStartDate IS NULL);
