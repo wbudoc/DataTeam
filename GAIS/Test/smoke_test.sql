@@ -36,7 +36,7 @@ INSERT INTO smoke_test_report(description,result,totalNumber)
 SELECT 'Status is not a standard value in Activity',IF(COUNT(*)>0,'Fail','Pass'),COUNT(*) FROM z_newcreate_template_gais WHERE parentType='Activity' AND LENGTH(TRIM(activityStatus))>0 AND activityStatus NOT IN('Not Started','In Progress','Completed','Waiting For Others','Deferred','Deferred','Other');
 
 INSERT INTO smoke_test_report(description,result,totalNumber)
-SELECT 'Status is blank, and we will set it as completed in Activity',IF(COUNT(*)>0,'Fail','Pass'),COUNT(*) FROM z_newcreate_template_gais WHERE parentType='Activity' AND (LENGTH(TRIM(activityStatus))=0 OR activityStatus IS NOT NULL);
+SELECT 'Status is blank, and we will set it as completed in Activity',IF(COUNT(*)>0,'Fail','Pass'),COUNT(*) FROM z_newcreate_template_gais WHERE parentType='Activity' AND (LENGTH(TRIM(activityStatus))=0 OR activityStatus IS NULL);
 
 INSERT INTO smoke_test_report(description,result,totalNumber)
 SELECT 'If the row is activity, then the activityLinkedGrantLegacyId, activityLinkedProspectLegacyId and activityLinkedInvitationLegacyId only populated one column',IF(COUNT(*)>0,'Fail','Pass'),COUNT(*) FROM z_newcreate_template_gais WHERE parentType IN('Activity') AND (LENGTH(TRIM(activityLinkedGrantLegacyId))>0 AND LENGTH(TRIM(activityLinkedProspectLegacyId))>0) OR (LENGTH(TRIM(activityLinkedProspectLegacyId))>0 AND LENGTH(TRIM(activityLinkedInvitationLegacyId))>0) OR (LENGTH(TRIM(activityLinkedGrantLegacyId))>0 AND LENGTH(TRIM(activityLinkedInvitationLegacyId))>0);
