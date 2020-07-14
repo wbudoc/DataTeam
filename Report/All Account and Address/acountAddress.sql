@@ -39,7 +39,7 @@ UPDATE z_newcreate_all_account_report_20200710 zn,household_contact hc SET zn.ho
 CREATE TABLE z_newcreate_exist_address_20200710
 SELECT * FROM address WHERE userId IS NOT NULL AND (LENGTH(TRIM(street1))>0 OR LENGTH(TRIM(street2))>0 OR LENGTH(TRIM(street3))>0 OR LENGTH(TRIM(street4))>0 OR LENGTH(TRIM(city))>0 OR LENGTH(TRIM(state))>0 OR LENGTH(TRIM(province))>0 OR LENGTH(TRIM(zip))>0 OR LENGTH(TRIM(zipSuffix))>0 OR LENGTH(TRIM(county))>0 OR LENGTH(TRIM(countryId))>0);
 
-UPDATE z_newcreate_exist_address_20200710 zn,state s SET zn.state=s.name WHERE zn.state-s.abbreviation AND zn.state IS NOT NULL;
+UPDATE z_newcreate_exist_address_20200710 zn,state s SET zn.state=s.name WHERE zn.state=s.abbreviation AND zn.state IS NOT NULL;
 
 ALTER TABLE z_newcreate_exist_address_20200710 MODIFY COLUMN startDate VARCHAR(100),MODIFY COLUMN endDate VARCHAR(100);
 
