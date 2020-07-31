@@ -50,6 +50,8 @@ DELETE FROM z_newcreate_prepare_statement_to_proceed;
 
 END//
 
+DELIMITER ;
+
 INSERT INTO z_newcreate_prepare_statement_to_proceed(sql_stmt)
 SELECT CONCAT('DROP TABLE ',TABLE_NAME,';') FROM information_schema.`TABLES` WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME LIKE '%compare_%_key_20200205';
 
