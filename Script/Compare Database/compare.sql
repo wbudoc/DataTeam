@@ -63,7 +63,7 @@ CALL dt_wl_proceed_prepare_statement();
 #557
 CREATE TABLE z_newcreate_table_isExist_key
 SELECT TABLE_SCHEMA,TABLE_NAME,COUNT(*) pri_Key_Number,GROUP_CONCAT(DISTINCT CONCAT('`',COLUMN_NAME,'`') ORDER BY ORDINAL_POSITION SEPARATOR ', ') pri_Key_Column,GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', ') pri_Key_Column1 FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME IN(SELECT TABLE_NAME FROM information_schema.`TABLES` zn2 WHERE zn2.TABLE_SCHEMA=DATABASE() AND zn2.TABLE_NAME NOT LIKE 'z_newcreate%' AND zn2.TABLE_NAME NOT LIKE 'z_excel%' AND zn2.TABLE_NAME NOT LIKE 'final_merge_%' AND zn2.TABLE_NAME NOT LIKE 'z_check_cut_off_before%' AND zn2.TABLE_NAME NOT LIKE 'smoke_test_report%' AND zn2.TABLE_TYPE<>'VIEW' AND zn2.TABLE_NAME NOT LIKE 'all_extra_%' AND zn2.TABLE_NAME NOT LIKE 'deal_with_extra%') AND COLUMN_KEY='PRI' GROUP BY TABLE_NAME;
- 
+
 #48
 INSERT INTO z_newcreate_table_isExist_key
 SELECT TABLE_SCHEMA,TABLE_NAME,0,GROUP_CONCAT(DISTINCT CONCAT('`',COLUMN_NAME,'`') ORDER BY ORDINAL_POSITION SEPARATOR ', ') pri_Key_Column,GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', ') pri_Key_Column1 FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME IN(SELECT TABLE_NAME FROM information_schema.`TABLES` zn2 WHERE zn2.TABLE_SCHEMA=DATABASE() AND zn2.TABLE_NAME NOT LIKE 'z_newcreate%' AND zn2.TABLE_NAME NOT LIKE 'z_excel%' AND zn2.TABLE_NAME NOT LIKE 'final_merge_%' AND zn2.TABLE_NAME NOT LIKE 'z_check_cut_off_before%' AND zn2.TABLE_NAME NOT LIKE 'smoke_test_report%' AND zn2.TABLE_TYPE<>'VIEW' AND zn2.TABLE_NAME NOT LIKE 'all_extra_%' AND zn2.TABLE_NAME NOT LIKE 'deal_with_extra%') AND TABLE_NAME NOT IN(SELECT TABLE_NAME FROM z_newcreate_table_isExist_key) GROUP BY TABLE_NAME;
@@ -74,7 +74,7 @@ SELECT TABLE_SCHEMA,TABLE_NAME,0,GROUP_CONCAT(DISTINCT CONCAT('`',COLUMN_NAME,'`
 #557
 CREATE TABLE z_newcreate_table_isExist2_key
 SELECT TABLE_SCHEMA,TABLE_NAME,COUNT(*) pri_Key_Number,GROUP_CONCAT(DISTINCT CONCAT('`',COLUMN_NAME,'`') ORDER BY ORDINAL_POSITION SEPARATOR ', ') pri_Key_Column,GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', ') pri_Key_Column1 FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA=@to_databaseName AND TABLE_NAME IN(SELECT TABLE_NAME FROM information_schema.`TABLES` zn2 WHERE zn2.TABLE_SCHEMA=@to_databaseName AND zn2.TABLE_NAME NOT LIKE 'z_newcreate%' AND zn2.TABLE_NAME NOT LIKE 'z_excel%' AND zn2.TABLE_NAME NOT LIKE 'final_merge_%' AND zn2.TABLE_NAME NOT LIKE 'z_check_cut_off_before%' AND zn2.TABLE_NAME NOT LIKE 'smoke_test_report%' AND zn2.TABLE_TYPE<>'VIEW' AND zn2.TABLE_NAME NOT LIKE 'all_extra_%' AND zn2.TABLE_NAME NOT LIKE 'deal_with_extra%') AND COLUMN_KEY='PRI' GROUP BY TABLE_NAME;
- 
+
 #48
 INSERT INTO z_newcreate_table_isExist2_key
 SELECT TABLE_SCHEMA,TABLE_NAME,0,GROUP_CONCAT(DISTINCT CONCAT('`',COLUMN_NAME,'`') ORDER BY ORDINAL_POSITION SEPARATOR ', ') pri_Key_Column,GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', ') pri_Key_Column1 FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA=@to_databaseName AND TABLE_NAME IN(SELECT TABLE_NAME FROM information_schema.`TABLES` zn2 WHERE zn2.TABLE_SCHEMA=@to_databaseName AND zn2.TABLE_NAME NOT LIKE 'z_newcreate%' AND zn2.TABLE_NAME NOT LIKE 'z_excel%' AND zn2.TABLE_NAME NOT LIKE 'final_merge_%' AND zn2.TABLE_NAME NOT LIKE 'z_check_cut_off_before%' AND zn2.TABLE_NAME NOT LIKE 'smoke_test_report%' AND zn2.TABLE_TYPE<>'VIEW' AND zn2.TABLE_NAME NOT LIKE 'all_extra_%' AND zn2.TABLE_NAME NOT LIKE 'deal_with_extra%') AND TABLE_NAME NOT IN(SELECT TABLE_NAME FROM z_newcreate_table_isExist2_key) GROUP BY TABLE_NAME;
@@ -85,7 +85,7 @@ ALTER TABLE z_newcreate_table_isExist_key ADD INDEX(TABLE_NAME);
 #query all the data for exist the primary key table
 ############################################################################################################################
 INSERT INTO z_newcreate_prepare_statement_to_proceed(sql_stmt)
-SELECT CONCAT('INSERT INTO z_newcreate_is_key_all_table ',GROUP_CONCAT(DISTINCT a.con_sql SEPARATOR ' UNION ALL '),';') con_sql FROM 
+SELECT CONCAT('INSERT INTO z_newcreate_is_key_all_table ',GROUP_CONCAT(DISTINCT a.con_sql SEPARATOR ' UNION ALL '),';') con_sql FROM
 (SELECT CONCAT("SELECT '",zn1.TABLE_NAME,"' tableName, MD5(CONCAT(",GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',zn1.COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', '),")) allinfor,1 comfrom,'",zn1.TABLE_SCHEMA,"' instance FROM ",zn1.TABLE_SCHEMA,'.',zn1.TABLE_NAME) con_sql,zn1.TABLE_NAME FROM information_schema.`COLUMNS` zn1 JOIN information_schema.`TABLES` zn2 ON zn1.TABLE_NAME=zn2.TABLE_NAME WHERE zn1.TABLE_SCHEMA=DATABASE() AND zn2.TABLE_SCHEMA=DATABASE() AND zn2.TABLE_NAME IN(SELECT TABLE_NAME FROM z_newcreate_table_isExist_key WHERE pri_Key_Number>0) GROUP BY zn1.TABLE_NAME
 UNION
 SELECT CONCAT("SELECT '",zn1.TABLE_NAME,"' tableName, MD5(CONCAT(",GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',zn1.COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', '),")) allinfor,2 comfrom,'",zn1.TABLE_SCHEMA,"' instance FROM ",zn1.TABLE_SCHEMA,'.',zn1.TABLE_NAME) con_sql,zn1.TABLE_NAME FROM information_schema.`COLUMNS` zn1 JOIN information_schema.`TABLES` zn2 ON zn1.TABLE_NAME=zn2.TABLE_NAME WHERE zn1.TABLE_SCHEMA=@to_databaseName AND zn2.TABLE_SCHEMA=@to_databaseName AND zn2.TABLE_NAME IN(SELECT TABLE_NAME FROM z_newcreate_table_isExist_key WHERE pri_Key_Number>0) GROUP BY zn1.TABLE_NAME) a GROUP BY a.TABLE_NAME;
@@ -94,32 +94,36 @@ SELECT CONCAT("SELECT '",zn1.TABLE_NAME,"' tableName, MD5(CONCAT(",GROUP_CONCAT(
 #query all the data for not exist the primary key table
 ############################################################################################################################
 INSERT INTO z_newcreate_prepare_statement_to_proceed(sql_stmt)
-SELECT CONCAT('INSERT INTO z_newcreate_no_key_all_table ',GROUP_CONCAT(DISTINCT a.con_sql SEPARATOR ' UNION ALL '),';') con_sql FROM 
+SELECT CONCAT('INSERT INTO z_newcreate_no_key_all_table ',GROUP_CONCAT(DISTINCT a.con_sql SEPARATOR ' UNION ALL '),';') con_sql FROM
 (SELECT CONCAT("SELECT '",zn1.TABLE_NAME,"' tableName, MD5(CONCAT(",GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',zn1.COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', '),")) allinfor,1 comfrom,'",zn1.TABLE_SCHEMA,"' instance FROM ",zn1.TABLE_SCHEMA,'.',zn1.TABLE_NAME) con_sql,zn1.TABLE_NAME FROM information_schema.`COLUMNS` zn1 JOIN information_schema.`TABLES` zn2 ON zn1.TABLE_NAME=zn2.TABLE_NAME WHERE zn1.TABLE_SCHEMA=DATABASE() AND zn2.TABLE_SCHEMA=DATABASE() AND zn2.TABLE_NAME IN(SELECT TABLE_NAME FROM z_newcreate_table_isExist_key WHERE pri_Key_Number=0) GROUP BY zn1.TABLE_NAME
 UNION
 SELECT CONCAT("SELECT '",zn1.TABLE_NAME,"' tableName, MD5(CONCAT(",GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',zn1.COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', '),")) allinfor,2 comfrom,'",zn1.TABLE_SCHEMA,"' instance FROM ",zn1.TABLE_SCHEMA,'.',zn1.TABLE_NAME) con_sql,zn1.TABLE_NAME FROM information_schema.`COLUMNS` zn1 JOIN information_schema.`TABLES` zn2 ON zn1.TABLE_NAME=zn2.TABLE_NAME WHERE zn1.TABLE_SCHEMA=@to_databaseName AND zn2.TABLE_SCHEMA=@to_databaseName AND zn2.TABLE_NAME IN(SELECT TABLE_NAME FROM z_newcreate_table_isExist_key WHERE pri_Key_Number=0) GROUP BY zn1.TABLE_NAME) a GROUP BY a.TABLE_NAME;
 
 CALL dt_wl_proceed_prepare_statement();
+
 ALTER TABLE z_newcreate_no_key_all_table ADD COLUMN count INT DEFAULT NULL;
 ALTER TABLE z_newcreate_is_key_all_table MODIFY COLUMN all_infor VARCHAR(255);
 ALTER TABLE z_newcreate_no_key_all_table MODIFY COLUMN all_infor VARCHAR(255);
-ALTER TABLE z_newcreate_is_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor);
-ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor),ADD INDEX(comefrom);
+ALTER TABLE z_newcreate_is_key_all_table ADD INDEX(all_infor,tableName);
+ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(all_infor,tableName,comefrom);
 
 CREATE TABLE z_newcreate_total_number
 SELECT *,COUNT(*) num FROM z_newcreate_no_key_all_table GROUP BY CONCAT_WS('#',tableName,all_infor,comefrom);
 
-ALTER TABLE z_newcreate_total_number ADD INDEX(tableName),ADD INDEX(all_infor),ADD INDEX(comefrom);
+ALTER TABLE z_newcreate_total_number ADD INDEX(all_infor,tableName,comefrom);
 
 UPDATE z_newcreate_no_key_all_table zn,z_newcreate_total_number zt SET zn.count=zt.num WHERE zn.tableName=zt.tableName AND zn.all_infor=zt.all_infor AND zn.comefrom=zt.comefrom;
 
-ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(count);
 DROP TABLE z_newcreate_total_number;
+
 ############################################################################################################################
 #Query the change table
 ############################################################################################################################
-DELETE zn1.*,zn2.* FROM z_newcreate_is_key_all_table zn1,z_newcreate_is_key_all_table zn2 WHERE zn1.tableName=zn2.tableName AND zn1.all_infor=zn2.all_infor AND zn1.comefrom=1 AND zn2.comefrom=2;
-DELETE zn1.*,zn2.* FROM z_newcreate_no_key_all_table zn1,z_newcreate_no_key_all_table zn2 WHERE zn1.tableName=zn2.tableName AND zn1.all_infor=zn2.all_infor AND zn1.count=zn2.count AND zn1.comefrom=1 AND zn2.comefrom=2;
+DELETE zn1.*,zn2.* FROM z_newcreate_is_key_all_table zn1 JOIN z_newcreate_is_key_all_table zn2 ON zn1.tableName=zn2.tableName AND zn1.all_infor=zn2.all_infor WHERE zn1.comefrom=1 AND zn2.comefrom=2;
+DELETE zn1.*,zn2.* FROM z_newcreate_no_key_all_table zn1 JOIN z_newcreate_no_key_all_table zn2 ON zn1.tableName=zn2.tableName AND zn1.all_infor=zn2.all_infor AND zn1.count=zn2.count WHERE zn1.comefrom=1 AND zn2.comefrom=2;
+
+ALTER TABLE z_newcreate_is_key_all_table ADD INDEX(tableName);
+ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(tableName);
 
 ############################################################################################################################
 #Query the change table for have primary key
