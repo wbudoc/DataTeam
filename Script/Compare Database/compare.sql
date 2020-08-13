@@ -100,9 +100,11 @@ UNION
 SELECT CONCAT("SELECT '",zn1.TABLE_NAME,"' tableName, MD5(CONCAT(",GROUP_CONCAT(DISTINCT CONCAT('IFNULL(`',zn1.COLUMN_NAME,'`,'''')') ORDER BY ORDINAL_POSITION SEPARATOR ', '),")) allinfor,2 comfrom,'",zn1.TABLE_SCHEMA,"' instance FROM ",zn1.TABLE_SCHEMA,'.',zn1.TABLE_NAME) con_sql,zn1.TABLE_NAME FROM information_schema.`COLUMNS` zn1 JOIN information_schema.`TABLES` zn2 ON zn1.TABLE_NAME=zn2.TABLE_NAME WHERE zn1.TABLE_SCHEMA=@to_databaseName AND zn2.TABLE_SCHEMA=@to_databaseName AND zn2.TABLE_NAME IN(SELECT TABLE_NAME FROM z_newcreate_table_isExist_key WHERE pri_Key_Number=0) GROUP BY zn1.TABLE_NAME) a GROUP BY a.TABLE_NAME;
 
 CALL dt_wl_proceed_prepare_statement();
-ALTER TABLE z_newcreate_is_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor(255));
-ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor(255));
 ALTER TABLE z_newcreate_no_key_all_table ADD COLUMN count INT DEFAULT NULL;
+ALTER TABLE z_newcreate_is_key_all_table MODIFY COLUMN all_infor VARCHAR(255);
+ALTER TABLE z_newcreate_no_key_all_table MODIFY COLUMN all_infor VARCHAR(255);
+ALTER TABLE z_newcreate_is_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor);
+ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor),ADD INDEX(count);
 
 CREATE TABLE z_newcreate_total_number
 SELECT *,COUNT(*) num FROM z_newcreate_no_key_all_table GROUP BY CONCAT_WS('#',tableName,all_infor,comefrom);
