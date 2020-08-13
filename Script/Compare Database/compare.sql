@@ -104,13 +104,16 @@ ALTER TABLE z_newcreate_no_key_all_table ADD COLUMN count INT DEFAULT NULL;
 ALTER TABLE z_newcreate_is_key_all_table MODIFY COLUMN all_infor VARCHAR(255);
 ALTER TABLE z_newcreate_no_key_all_table MODIFY COLUMN all_infor VARCHAR(255);
 ALTER TABLE z_newcreate_is_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor);
-ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor),ADD INDEX(count);
+ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(tableName),ADD INDEX(all_infor),ADD INDEX(comefrom);
 
 CREATE TABLE z_newcreate_total_number
 SELECT *,COUNT(*) num FROM z_newcreate_no_key_all_table GROUP BY CONCAT_WS('#',tableName,all_infor,comefrom);
 
+ALTER TABLE z_newcreate_total_number ADD INDEX(tableName),ADD INDEX(all_infor),ADD INDEX(comefrom);
+
 UPDATE z_newcreate_no_key_all_table zn,z_newcreate_total_number zt SET zn.count=zt.num WHERE zn.tableName=zt.tableName AND zn.all_infor=zt.all_infor AND zn.comefrom=zt.comefrom;
 
+ALTER TABLE z_newcreate_no_key_all_table ADD INDEX(count);
 DROP TABLE z_newcreate_total_number;
 ############################################################################################################################
 #Query the change table
