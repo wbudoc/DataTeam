@@ -8,6 +8,7 @@
 #                 Add new column householdHeadAccount, `Household ID`, email1, email2, email3
 #                 Catch data no full account for household and company contact
 #
+#                                                    CC-3572
 #
 #                 Add jobtitle salutation preferedName phone1 phone2 phone3 dobDD dobMM dobYYYY accountType
 #
