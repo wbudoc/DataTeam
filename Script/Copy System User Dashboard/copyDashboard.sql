@@ -104,6 +104,5 @@ INSERT INTO dsh_dashboard_widget_search_criteria(id,dashboardWidgetId,systemCrit
 SELECT id,dashboardWidgetId,systemCriteriaId,`value`,`enable` from z_newcreate_dsh_dashboard_widget_search_criteria_insert_20200512;
 
 ##########################################################################################################################
-UPDATE organization_bio SET calculateFiscalStats = 1;
 
 COMMIT;
