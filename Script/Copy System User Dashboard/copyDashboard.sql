@@ -36,7 +36,7 @@ CREATE TABLE z_newcreate_dsh_dashboard_widget_search_criteria_copy_20200512
 SELECT dd.* FROM dsh_dashboard_widget_search_criteria dd JOIN z_newcreate_dsh_dashboard_widget_copy_20200512 zn ON dd.dashboardWidgetId=zn.id;
 
 ##########################################################################################################################
-#delete dafault fundraising dashboard(another system user)
+#delete dafault fundraising dashboard(other system user)
 ##########################################################################################################################
 CREATE TABLE z_newcreate_dsh_dashboard_delete_20200512
 SELECT * FROM dsh_dashboard WHERE userId IN(1,3) AND type IN(1,2);
@@ -59,7 +59,7 @@ DELETE dd.* FROM dsh_dashboard dd JOIN z_newcreate_dsh_dashboard_delete_20200512
 #import dsh_dashboard
 ##########################################################################################################################
 CREATE TABLE z_newcreate_dsh_dashboard_insert_20200512
-SELECT zn.id,u.userId,zn.type,zn.defaultDashboard,zn.id oldId FROM z_newcreate_dsh_dashboard_copy_20200512 zn JOIN (SELECT userId FROM user WHERE userId IN(1,3)) u ORDER BY u.userId,zn.id;
+SELECT zn.id,u.userId,zn.type,zn.defaultDashboard,zn.id oldId FROM z_newcreate_dsh_dashboard_copy_20200512 zn JOIN (SELECT userId FROM user WHERE userType=2 AND userId IN(1,3)) u ORDER BY u.userId,zn.id;
 
 SELECT IFNULL(max(id+0),0) FROM dsh_dashboard INTO @dshId;
 UPDATE z_newcreate_dsh_dashboard_insert_20200512 SET id=(@dshId:=@dshId+1);
