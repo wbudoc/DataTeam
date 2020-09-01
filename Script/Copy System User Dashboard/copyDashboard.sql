@@ -56,7 +56,7 @@ DELETE dd.* FROM dsh_dashboard_widget dd JOIN z_newcreate_dsh_dashboard_widget_d
 DELETE dd.* FROM dsh_dashboard dd JOIN z_newcreate_dsh_dashboard_delete_20200512 zn ON dd.id=zn.id;
 
 ##########################################################################################################################
-#insert copy fundraising dashboard
+#import dsh_dashboard
 ##########################################################################################################################
 CREATE TABLE z_newcreate_dsh_dashboard_insert_20200512
 SELECT zn.id,u.userId,zn.type,zn.defaultDashboard,zn.id oldId FROM z_newcreate_dsh_dashboard_copy_20200512 zn JOIN (SELECT userId FROM user WHERE userId IN(1,3)) u ORDER BY u.userId,zn.id;
