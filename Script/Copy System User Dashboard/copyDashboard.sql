@@ -76,8 +76,8 @@ SELECT zn.id,zn.title,zn2.Id dashboardId,zn.systemWidgetId,zn.`columns`,zn.pageS
 SELECT IFNULL(max(id+0),0) FROM dsh_dashboard_widget INTO @dshId;
 UPDATE z_newcreate_dsh_dashboard_widget_insert_20200512 SET id=(@dshId:=@dshId+1);
 
-INSERT INTO dsh_dashboard_widget (id,title,dashboardId,systemWidgetId,`columns`,pageSize,displayOrder,enablePosting,sortField,sortDirection)
-SELECT id,title,dashboardId,systemWidgetId,`columns`,pageSize,displayOrder,enablePosting,sortField,sortDirection from z_newcreate_dsh_dashboard_widget_insert_20200512;
+INSERT INTO dsh_dashboard_widget(id,title,dashboardId,systemWidgetId,`columns`,pageSize,displayOrder,enablePosting,sortField,sortDirection)
+SELECT id,title,dashboardId,systemWidgetId,`columns`,pageSize,displayOrder,enablePosting,sortField,sortDirection FROM z_newcreate_dsh_dashboard_widget_insert_20200512;
 
 ##########################################################################################################################
 #import dsh_dashboard_widget_output
@@ -88,7 +88,7 @@ SELECT zn.id,zn2.Id dashboardWidgetId,zn.systemOutputId,zn.displayOrder,zn.selec
 SELECT IFNULL(max(id+0),0) FROM dsh_dashboard_widget_output INTO @dshId;
 UPDATE z_newcreate_dsh_dashboard_widget_output_insert_20200512 SET id=(@dshId:=@dshId+1);
 
-INSERT INTO dsh_dashboard_widget_output (id,dashboardWidgetId,systemOutputId,displayOrder,selected)
+INSERT INTO dsh_dashboard_widget_output(id,dashboardWidgetId,systemOutputId,displayOrder,selected)
 SELECT id,dashboardWidgetId,systemOutputId,displayOrder,selected FROM z_newcreate_dsh_dashboard_widget_output_insert_20200512;
 
 ##########################################################################################################################
@@ -100,7 +100,7 @@ SELECT zn.id,zn2.Id dashboardWidgetId,zn.systemCriteriaId,zn.`value`,zn.`enable`
 SELECT IFNULL(max(id+0),0) FROM dsh_dashboard_widget_search_criteria INTO @dshId;
 UPDATE z_newcreate_dsh_dashboard_widget_search_criteria_insert_20200512 SET id=(@dshId:=@dshId+1);
 
-INSERT INTO dsh_dashboard_widget_search_criteria (id,dashboardWidgetId,systemCriteriaId,`value`,`enable`)
+INSERT INTO dsh_dashboard_widget_search_criteria(id,dashboardWidgetId,systemCriteriaId,`value`,`enable`)
 SELECT id,dashboardWidgetId,systemCriteriaId,`value`,`enable` from z_newcreate_dsh_dashboard_widget_search_criteria_insert_20200512;
 
 ##########################################################################################################################
