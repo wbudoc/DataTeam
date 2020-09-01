@@ -1,6 +1,6 @@
 
 ##########################################################################################################################
-#                            copy system user dashboard to other system user
+#                            copy one system user dashboard to other system user
 #
 #                                                  CC-3459,CC-2735,CC-3059
 #
@@ -24,7 +24,7 @@ z_newcreate_dsh_dashboard_widget_search_criteria_insert_20200512;
 #type: Mission Control(1), ACCOUNT(2), FUNDRAISING (3), MEMBERSHIP (4), EVENT(5), REPORT(6), Email(7), STORE(8), DOCUMENT(9) 最后一个type=9 的还没有这个功能
 ##########################################################################################################################
 CREATE TABLE z_newcreate_dsh_dashboard_copy_20200512
-SELECT * FROM dsh_dashboard WHERE userId IN(4) AND type IN(1,2);
+SELECT * FROM dsh_dashboard WHERE userId=4 AND type IN(1,2);
 
 CREATE TABLE z_newcreate_dsh_dashboard_widget_copy_20200512
 SELECT dd.* FROM dsh_dashboard_widget dd JOIN z_newcreate_dsh_dashboard_copy_20200512 zn ON dd.dashboardId=zn.id;
