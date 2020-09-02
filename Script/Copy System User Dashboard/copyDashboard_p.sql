@@ -147,8 +147,8 @@ END //
 DELIMITER ;
 
 ##########################################################################################################################
-#originalUserId:需要拷贝dashboard账号的userId
-#targetUserId:拷贝到对应账号上的userId
+#originalUserId:需要拷贝dashboard账号的userId（仅一个）
+#targetUserId:拷贝到对应账号上的userId(仅一个)
 #dashboardType:Mission Control(1), ACCOUNT(2), FUNDRAISING (3), MEMBERSHIP (4), EVENT(5), REPORT(6), Email(7), STORE(8), DOCUMENT(9) 最后一个type=9 的还没有这个功能,传参支持多个，但是需要用逗号拼接
 ##########################################################################################################################
 CALL bwh_dt_copy_dashboard('4','5','1,2');
