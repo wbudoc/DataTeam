@@ -156,3 +156,4 @@ CALL bwh_dt_copy_dashboard('4','3','1,2');
 
 DROP PROCEDURE IF EXISTS bwh_dt_parse_dashboard;
 DROP FUNCTION IF EXISTS dt_wl_parse_string;
+commit;
