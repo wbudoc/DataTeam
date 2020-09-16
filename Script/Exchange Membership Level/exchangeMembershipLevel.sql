@@ -4,6 +4,23 @@
 #                                在执行下面的脚本之前需要先看INT-153上面的description,进行一些验证
 #
 ###################################################################################################################################
+
+delimiter //
+CREATE DEFINER=`root`@`%` PROCEDURE dt_membership_discount()
+BEGIN
+SELECT itemName INTO @itemName FROM discount WHERE itemName='Any membership';
+
+IF @itemName='Any membership' THEN
+	UPDATE z_newcreate_exchange_membership3 SET existDiscount=1;
+ELSE
+	UPDATE z_newcreate_exchange_membership3 zn,discount d,membership_listing ml SET zn.existDiscount=1 WHERE zn.from_membershipListingId=ml.id AND (ml.couponCode IS NOT NULL OR ml.membershipTermId=d.itemId) AND zn.from_membershipListingId IS NOT NULL;
+
+END IF;
+END //
+
+delimiter;
+
+###################################################################################################################################
 DROP TABLE IF EXISTS
 z_newcreate_exchange_membership,
 z_newcreate_exchange_membership1,
@@ -13,6 +30,8 @@ z_newcreate_exchange_membership4,
 z_newcreate_exchange_membership_spec,
 z_newcreate_exchange_membership_spec1,
 z_newcreate_one_to_more;
+
+DROP PROCEDURE IF EXISTS dt_membership_discount;
 
 ###################################################################################################################################
 #Create Exchange Membership
@@ -119,7 +138,8 @@ SELECT * FROM z_newcreate_exchange_membership2 WHERE existMembershipSpec IS NULL
 
 ALTER TABLE z_newcreate_exchange_membership3 ADD COLUMN existDiscount INT DEFAULT NULL;
 
-UPDATE z_newcreate_exchange_membership3 zn,discount d,membership_listing ml SET zn.existDiscount=1 WHERE zn.from_membershipListingId=ml.id AND (ml.couponCode IS NOT NULL OR ml.membershipTermId=d.itemId) AND zn.from_membershipListingId IS NOT NULL;
+CALL dt_membership_discount();
+DROP PROCEDURE IF EXISTS dt_membership_discount;
 
 ###################################################################################################################################
 #final exchange membership
