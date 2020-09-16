@@ -1,37 +1,7 @@
-#################################################################################
-#su1.userId 需要拷贝的system user
-#su2.userId 拷贝到的system user
-#拷贝执行下面一句话，存在值,那么说明拷贝dashboard的时候可能存在两个system user权限不对等的情况
-#若不存在值，则可以直接拷贝公用脚本
-#################################################################################
-SELECT * FROM security_department_user su1,security_department_user su2 WHERE su1.departmentId<>su1.departmentId AND su1.userId IN(3) AND su2.userId IN(4);
-
-#################################################################################
-#上面存在有值，下一步验证下面的表
-#这里主要验证security_role_assignment,看是否仅仅是user group name不同， 但是权限相同的情况
-#如果名字不同，权限相同可以直接拷贝公用脚本
-#如果名字不同，权限也不相同,则需要问客户
-#################################################################################
-#所有定义的模块权限共享的Id
-SELECT * FROM security_role;
-
-#页面创建的user group name
-SELECT * FROM security_department;
-
-#绑定user group name和相应的模块权限
-SELECT * FROM security_department_role;
-
-#将user group name中定义的模块权限给指定的system user
-SELECT * FROM security_department_user;
-
-#给user group name下添加模块权限
-SELECT * FROM security_role_assignment;
-
-#拷贝前需要按上面的步骤，权限验证是否对等。没有问题可拷贝执行下面的脚本
-
 #######################################################################################################################################################
 #
 #                                                         INT-137
+#                                     在使用下面的脚本的时候需要先对INT-137中的description进行验证
 #
 #######################################################################################################################################################
 DROP FUNCTION IF EXISTS dt_wl_parse_string;
