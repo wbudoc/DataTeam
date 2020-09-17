@@ -128,6 +128,9 @@ SELECT *,membershipId to_membershipId FROM membership_spec WHERE listId IS NULL 
 UNION
 SELECT *,membershipId FROM membership_spec WHERE listId IS NULL AND (accountId,membershipId) IN(SELECT ml.accountId,zb2.to_membershipId FROM membership_listing ml JOIN z_newcreate_exchange_membership2 zb2 ON ml.id=zb2.from_membershipListingId);
 
+###########################################################
+#对于一个账号有多个
+###########################################################
 CREATE TABLE z_newcreate_a_part_membership_spec
 SELECT ml.accountId,ml.membershipId FROM membership_listing ml
 JOIN z_newcreate_exchange_membership2 zb2 ON ml.id=zb2.from_membershipListingId
@@ -166,6 +169,7 @@ SELECT * FROM z_newcreate_exchange_membership2 WHERE existMembershipSpec IS NULL
 UPDATE membership_listing ml,z_newcreate_exchange_membership3 zn2 SET ml.membershipId=zn2.to_membershipId,ml.membershipTermId=NULL WHERE ml.id=zn2.from_membershipListingId;
 UPDATE membership_listing ml,membership_term mt SET ml.membershipTermId=mt.id WHERE ml.membershipId=mt.membershipId AND ml.membershipGroupParentId IS NULL AND mt.parentMembershipTermId IS NULL AND ml.membershipTermId IS NULL AND ml.enrollType=mt.enrollType;
 UPDATE shopping_cart_items si,(SELECT * FROM membership_listing WHERE id IN(SELECT from_membershipListingId FROM z_newcreate_exchange_membership3)) ml,membership_term mt SET si.name=mt.display WHERE si.membershipEnrollmentId=ml.id AND ml.membershipTermId=mt.id;
+UPDATE membership_spec ms,z_newcreate_exchange_membership3 zn SET ms.membershipId=zn.to_membershipId WHERE ms.listId=zn.from_membershipListingId;
 
 COMMIT;
 
