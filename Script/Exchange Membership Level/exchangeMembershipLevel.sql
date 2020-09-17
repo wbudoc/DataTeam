@@ -31,6 +31,7 @@ z_newcreate_exchange_membership4,
 z_newcreate_exchange_membership_spec,
 z_newcreate_exchange_membership_spec1,
 z_newcreate_ignore_membership_discount,
+z_newcreate_a_part_membership_spec,
 z_newcreate_one_to_more;
 
 ###################################################################################################################################
