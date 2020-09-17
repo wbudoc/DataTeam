@@ -4,7 +4,6 @@
 #                                在执行下面的脚本之前需要先看INT-153上面的description,进行一些验证
 #
 ###################################################################################################################################
-
 DROP PROCEDURE IF EXISTS dt_membership_discount;
 
 delimiter //
@@ -20,7 +19,7 @@ ELSE
 END IF;
 END //
 
-delimiter;
+delimiter ;
 
 ###################################################################################################################################
 DROP TABLE IF EXISTS
@@ -31,9 +30,8 @@ z_newcreate_exchange_membership3,
 z_newcreate_exchange_membership4,
 z_newcreate_exchange_membership_spec,
 z_newcreate_exchange_membership_spec1,
+z_newcreate_ignore_membership_discount,
 z_newcreate_one_to_more;
-
-DROP PROCEDURE IF EXISTS dt_membership_discount;
 
 ###################################################################################################################################
 #Create Exchange Membership
@@ -48,6 +46,20 @@ to_membershipGroup INT DEFAULT NULL);
 ###################################################################################################################################
 INSERT INTO z_newcreate_exchange_membership(from_membershipListingId,to_membershipLevel,to_membershipGroup)
 SELECT id,'','' FROM membership_listing WHERE membershipId IN();
+
+###################################################################################################################################
+#confirm whether from_membershipLevel exist discount
+###################################################################################################################################
+ALTER TABLE z_newcreate_exchange_membership ADD COLUMN existDiscount INT DEFAULT NULL;
+
+CALL dt_membership_discount();
+DROP PROCEDURE IF EXISTS dt_membership_discount;
+
+CREATE TABLE z_newcreate_ignore_membership_discount
+SELECT * FROM membership_listing WHERE (accountId,membershipId) IN(
+SELECT accountId,membershipId FROM membership_listing WHERE id IN(SELECT from_membershipListingId FROM z_newcreate_exchange_membership WHERE existDiscount=1));
+
+UPDATE z_newcreate_exchange_membership zn,z_newcreate_ignore_membership_discount zn2 SET zn.existDiscount=1 WHERE zn.from_membershipListingId=zn2.id;
 
 ###################################################################################################################################
 #Create New Membership Level
@@ -76,6 +88,7 @@ UPDATE z_newcreate_exchange_membership zn1,z_newcreate_one_to_more zn2 SET zn1.n
 ###################################################################################################################################
 UPDATE z_newcreate_exchange_membership zn,membership m SET zn.to_membershipId=m.id WHERE zn.to_membershipLevel=m.description AND zn.to_membershipGroup=m.groupMembershipType AND zn.needCreate<>2;
 UPDATE z_newcreate_exchange_membership zn,membership_listing ml SET zn.from_membershipId=ml.membershipId WHERE zn.from_membershipListingId=ml.id AND zn.from_membershipListingId IS NOT NULL;
+
 CREATE TABLE membership_term_wulei LIKE membership_term;
 INSERT INTO membership_term_wulei(membershipId,display,enrollType,termDuration,termUnit,cost)
 SELECT DISTINCT to_membershipId,CONCAT(to_membershipLevel,' Join'),1,1,1,0.00 FROM z_newcreate_exchange_membership WHERE needCreate=1;
@@ -86,15 +99,15 @@ SELECT MAX(displayOrder+0) INTO @membership_term_display_order FROM membership_t
 INSERT INTO membership_term(membershipId,display,enrollType,termDuration,termUnit,cost,displayOrder)
 SELECT membershipId,display,enrollType,termDuration,termUnit,cost,@membership_term_display_order:=@membership_term_display_order+1 FROM membership_term_wulei ORDER BY display;
 
-UPDATE membership_term mt1,membership_term mt2 SET mt1.pairedTermId=mt2.id WHERE mt1.membershipId=mt2.membershipId AND mt1.enrollType<>mt2.enrollType AND mt1.parentMembershipTermId IS NULL AND mt2.parentMembershipTermId IS NULL;
-
 DROP TABLE membership_term_wulei;
+
+UPDATE membership_term mt1,membership_term mt2 SET mt1.pairedTermId=mt2.id WHERE mt1.membershipId=mt2.membershipId AND mt1.enrollType<>mt2.enrollType AND mt1.parentMembershipTermId IS NULL AND mt2.parentMembershipTermId IS NULL;
 
 ###################################################################################################################################
 #confirm whether from_membershipLevel exist sub membership
 ###################################################################################################################################
 CREATE TABLE z_newcreate_exchange_membership1
-SELECT * FROM z_newcreate_exchange_membership WHERE needCreate<>2 AND from_membershipId IS NOT NULL;
+SELECT * FROM z_newcreate_exchange_membership WHERE needCreate<>2 AND from_membershipId IS NOT NULL AND existDiscount IS NULL;
 
 ALTER TABLE z_newcreate_exchange_membership1 ADD COLUMN isSubMember INT DEFAULT NULL;
 
@@ -114,6 +127,14 @@ SELECT *,membershipId to_membershipId FROM membership_spec WHERE listId IS NULL 
 UNION
 SELECT *,membershipId FROM membership_spec WHERE listId IS NULL AND (accountId,membershipId) IN(SELECT ml.accountId,zb2.to_membershipId FROM membership_listing ml JOIN z_newcreate_exchange_membership2 zb2 ON ml.id=zb2.from_membershipListingId);
 
+CREATE TABLE z_newcreate_a_part_membership_spec
+SELECT ml.accountId,ml.membershipId FROM membership_listing ml
+JOIN z_newcreate_exchange_membership2 zb2 ON ml.id=zb2.from_membershipListingId
+JOIN membership_listing ml2 ON ml.accountId=ml2.accountId AND ml.membershipId=ml2.membershipId
+WHERE ml.id<>ml2.id;
+
+DELETE FROM z_newcreate_exchange_membership_spec WHERE (accountId,membershipId) IN (SELECT accountId,membershipId FROM z_newcreate_a_part_membership_spec);
+
 ALTER TABLE z_newcreate_exchange_membership_spec ADD COLUMN isImport INT DEFAULT 0;
 
 UPDATE z_newcreate_exchange_membership_spec zn,z_newcreate_exchange_membership2 zn2 SET zn.to_membershipId=zn2.to_membershipId WHERE zn.to_membershipId=zn2.from_membershipId;
@@ -127,31 +148,23 @@ UPDATE z_newcreate_exchange_membership_spec zb1,z_newcreate_exchange_membership_
 
 DELETE FROM membership_spec WHERE id IN(SELECT id FROM z_newcreate_exchange_membership_spec WHERE isImport=1);
 
-INSERT membership_spec(id,accountId,membershipId,autoRenewal,creditCardId,bankAccountId,createBy,createTime,lastModifyBy,lastModifyTime)
+INSERT INTO membership_spec(id,accountId,membershipId,autoRenewal,creditCardId,bankAccountId,createBy,createTime,lastModifyBy,lastModifyTime)
 SELECT id,accountId,to_membershipId,autoRenewal,creditCardId,bankAccountId,'Neon Custom Import',NOW(),'Neon Custom Import',NOW() FROM z_newcreate_exchange_membership_spec1 WHERE isImport=1;
 
-UPDATE z_newcreate_exchange_membership2 zn,(SELECT * FROM membership_listing WHERE (accountId,membershipId) IN(SELECT accountId,membershipId FROM z_newcreate_exchange_membership_spec WHERE isImport=0)) ms SET zn.existMembershipSpec=1 WHERE zn.from_membershipListingId=ms.id;
-
-###################################################################################################################################
-#confirm whether from_membershipLevel exist discount
-###################################################################################################################################
-CREATE TABLE z_newcreate_exchange_membership3
-SELECT * FROM z_newcreate_exchange_membership2 WHERE existMembershipSpec IS NULL;
-
-ALTER TABLE z_newcreate_exchange_membership3 ADD COLUMN existDiscount INT DEFAULT NULL;
-
-CALL dt_membership_discount();
-DROP PROCEDURE IF EXISTS dt_membership_discount;
+UPDATE z_newcreate_exchange_membership2 zn,(SELECT * FROM membership_listing WHERE (accountId,membershipId) IN(
+SELECT accountId,membershipId FROM z_newcreate_exchange_membership_spec WHERE isImport=0
+UNION
+SELECT accountId,membershipId FROM z_newcreate_a_part_membership_spec)) ms SET zn.existMembershipSpec=1 WHERE zn.from_membershipListingId=ms.id;
 
 ###################################################################################################################################
 #final exchange membership
 ###################################################################################################################################
-CREATE TABLE z_newcreate_exchange_membership4
-SELECT * FROM z_newcreate_exchange_membership3 WHERE existDiscount IS NULL;
+CREATE TABLE z_newcreate_exchange_membership3
+SELECT * FROM z_newcreate_exchange_membership2 WHERE existMembershipSpec IS NULL;
 
-UPDATE membership_listing ml,z_newcreate_exchange_membership4 zn2 SET ml.membershipId=zn2.to_membershipId,ml.membershipTermId=NULL WHERE ml.id=zn2.from_membershipListingId;
+UPDATE membership_listing ml,z_newcreate_exchange_membership3 zn2 SET ml.membershipId=zn2.to_membershipId,ml.membershipTermId=NULL WHERE ml.id=zn2.from_membershipListingId;
 UPDATE membership_listing ml,membership_term mt SET ml.membershipTermId=mt.id WHERE ml.membershipId=mt.membershipId AND ml.membershipGroupParentId IS NULL AND mt.parentMembershipTermId IS NULL AND ml.membershipTermId IS NULL AND ml.enrollType=mt.enrollType;
-UPDATE shopping_cart_items si,(SELECT * FROM membership_listing WHERE id IN(SELECT from_membershipListingId FROM z_newcreate_exchange_membership4)) ml,membership_term mt SET si.name=mt.display WHERE si.membershipEnrollmentId=ml.id AND ml.membershipTermId=mt.id;
+UPDATE shopping_cart_items si,(SELECT * FROM membership_listing WHERE id IN(SELECT from_membershipListingId FROM z_newcreate_exchange_membership3)) ml,membership_term mt SET si.name=mt.display WHERE si.membershipEnrollmentId=ml.id AND ml.membershipTermId=mt.id;
 
 COMMIT;
 
