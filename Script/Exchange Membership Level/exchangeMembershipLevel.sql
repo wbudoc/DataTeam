@@ -5,15 +5,17 @@
 #
 ###################################################################################################################################
 
+DROP PROCEDURE IF EXISTS dt_membership_discount;
+
 delimiter //
 CREATE DEFINER=`root`@`%` PROCEDURE dt_membership_discount()
 BEGIN
-SELECT itemName INTO @itemName FROM discount WHERE itemName='Any membership';
+SELECT IF(COUNT(*)>0,COUNT(*),0) INTO @itemName FROM discount WHERE itemName='Any membership';
 
-IF @itemName='Any membership' THEN
-	UPDATE z_newcreate_exchange_membership3 SET existDiscount=1;
+IF @itemName>=1 THEN
+	UPDATE z_newcreate_exchange_membership SET existDiscount=1;
 ELSE
-	UPDATE z_newcreate_exchange_membership3 zn,discount d,membership_listing ml SET zn.existDiscount=1 WHERE zn.from_membershipListingId=ml.id AND (ml.couponCode IS NOT NULL OR ml.membershipTermId=d.itemId) AND zn.from_membershipListingId IS NOT NULL;
+	UPDATE z_newcreate_exchange_membership zn,discount d,membership_listing ml SET zn.existDiscount=1 WHERE zn.from_membershipListingId=ml.id AND (ml.couponCode IS NOT NULL OR ml.membershipTermId=d.itemId) AND zn.from_membershipListingId IS NOT NULL;
 
 END IF;
 END //
