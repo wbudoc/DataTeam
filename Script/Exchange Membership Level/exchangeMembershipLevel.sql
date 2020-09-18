@@ -132,11 +132,11 @@ SELECT *,membershipId FROM membership_spec WHERE listId IS NULL AND (accountId,m
 #对于一个账号有多个
 ###########################################################
 CREATE TABLE z_newcreate_a_part_membership_spec
-SELECT ml.accountId,ml.membershipId FROM membership_listing ml
-JOIN z_newcreate_exchange_membership2 zb2 ON ml.id=zb2.from_membershipListingId
-JOIN membership_listing ml2 ON ml.accountId=ml2.accountId AND ml.membershipId=ml2.membershipId
-WHERE ml.id<>ml2.id;
+SELECT accountId,membershipId FROM membership_listing WHERE (accountId,membershipId) IN(
+SELECT ml.accountId,ml.membershipId FROM membership_listing ml JOIN z_newcreate_exchange_membership2 zb2 ON ml.id=zb2.from_membershipListingId) AND
+Id NOT IN(SELECT from_membershipListingId FROM z_newcreate_exchange_membership2);
 
+DELETE FROM z_newcreate_a_part_membership_spec WHERE (accountId,membershipId) NOT IN (SELECT accountId,membershipId FROM z_newcreate_exchange_membership_spec);
 DELETE FROM z_newcreate_exchange_membership_spec WHERE (accountId,membershipId) IN (SELECT accountId,membershipId FROM z_newcreate_a_part_membership_spec);
 
 ALTER TABLE z_newcreate_exchange_membership_spec ADD COLUMN isImport INT DEFAULT 0;
