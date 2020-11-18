@@ -1,0 +1,7 @@
+CREATE TABLE z_bwh_ss
+SELECT a.ordinal_position,IF(a.columnName1 IS NULL,CHAR(a.columnName2),CHAR(a.columnName1,a.columnName2)) FROM (SELECT ordinal_position,
+IF((ordinal_position DIV 26)=0 OR (((ordinal_position DIV 26)-1)=0 AND (ordinal_position MOD 26)=0),NULL,IF((ordinal_position DIV 26)-1>0 AND (ordinal_position MOD 26)=0,(ordinal_position DIV 26)+63,(ordinal_position DIV 26)+64)) columnName1,
+IF((ordinal_position MOD 26)=0,90,(ordinal_position MOD 26)+64) columnName2 FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='z_newcreate_template_transaction_table_20201020' AND ordinal_position>0 AND ordinal_position<=702) a
+
+#按照字母自增到最大值ZZ列
+SELECT TABLE_NAME,COLUMN_NAME,ORDINAL_POSITION,IF(IF((ordinal_position DIV 26)=0 OR (((ordinal_position DIV 26)-1)=0 AND (ordinal_position MOD 26)=0),NULL,IF((ordinal_position DIV 26)-1>0 AND (ordinal_position MOD 26)=0,(ordinal_position DIV 26)+63,(ordinal_position DIV 26)+64)) IS NULL,CHAR(IF((ordinal_position MOD 26)=0,90,(ordinal_position MOD 26)+64)),CHAR(IF((ordinal_position DIV 26)=0 OR (((ordinal_position DIV 26)-1)=0 AND (ordinal_position MOD 26)=0),NULL,IF((ordinal_position DIV 26)-1>0 AND (ordinal_position MOD 26)=0,(ordinal_position DIV 26)+63,(ordinal_position DIV 26)+64)),IF((ordinal_position MOD 26)=0,90,(ordinal_position MOD 26)+64))) FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='z_newcreate_template_transaction_table_20201020' AND ordinal_position>0 AND ordinal_position<=702;

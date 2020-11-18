@@ -196,6 +196,9 @@ SELECT GROUP_CONCAT(DISTINCT CONCAT('SELECT instance,comefrom_tableName,update_o
 UNION
 SELECT GROUP_CONCAT(DISTINCT CONCAT('SELECT instance,comefrom_tableName,update_or_add,COUNT(*) num FROM ',TABLE_NAME,' WHERE update_or_add="UPDATE" and instance=DATABASE() GROUP BY comefrom_tableName,instance,update_or_add') SEPARATOR ' UNION ') con_sql,'update_or_add' FROM information_schema.`TABLES` WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME LIKE '%compare_%_key_20200205' GROUP BY TABLE_SCHEMA) a GROUP BY a.update_or_add;
 
+INSERT INTO z_newcreate_prepare_statement_to_proceed(sql_stmt)
+SELECT 'CREATE TABLE IF NOT EXISTS z_newcreate_update_or_add (instance VARCHAR(255) DEFAULT NULL,comefrom_tableName VARCHAR(255) DEFAULT NULL,update_or_add VARCHAR(255) DEFAULT NULL,num INT DEFAULT NULL);';
+
 CALL dt_wl_proceed_prepare_statement();
 
 ############################################################################################################################
